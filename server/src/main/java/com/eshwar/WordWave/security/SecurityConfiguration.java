@@ -24,20 +24,23 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfiguration {
     @Autowired
     JWTFilter jfilter;
+    @Autowired
+    JwtAuthenticationEntryPoint authenticationEntryPoint;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(customiser->customiser.disable())
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/", "/about","/login","/register")
-                        .permitAll()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/about", "/login","/signup","/test").permitAll()
+                        .anyRequest().authenticated())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jfilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

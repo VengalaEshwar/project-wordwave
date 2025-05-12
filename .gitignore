@@ -1,0 +1,45 @@
+# ========================
+# React Frontend (client/)
+# ========================
+/client/node_modules
+/client/build
+/client/.env
+/client/.DS_Store
+/client/.vscode
+/client/npm-debug.log*
+/client/yarn-debug.log*
+/client/yarn-error.log*
+
+# ========================
+# Spring Boot Backend (server/)
+# ========================
+/server/target/
+/server/.classpath
+/server/.project
+/server/.settings/
+/server/.idea/
+/server/.mvn/
+/server/mvnw
+/server/mvnw.cmd
+/server/.env
+/server/*.log
+/server/*.iml
+
+# Optional: ignore local DB files
+*.h2.db
+*.mv.db
+*.trace.db
+
+# ========================
+# Global Ignore
+# ========================
+.vscode/
+.idea/
+*.log
+.DS_Store
+*.swp
+*.swo
+*.tmp
+*.bak
+*.orig
+*.rej
