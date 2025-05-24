@@ -24,8 +24,7 @@ public class Blog {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @ElementCollection
-    private List<String> images= new ArrayList<>();
+    private String blogImage;
 
     @ElementCollection
     private List<String> tags= new ArrayList<>();
@@ -37,8 +36,8 @@ public class Blog {
     private User author;
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes;
+    private List<Like> likes= new ArrayList<>();
 }

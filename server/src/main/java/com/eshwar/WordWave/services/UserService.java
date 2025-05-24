@@ -2,9 +2,11 @@ package com.eshwar.WordWave.services;
 
 import com.eshwar.WordWave.dtos.BlogDTO;
 import com.eshwar.WordWave.dtos.UserDTO;
+import com.eshwar.WordWave.dtos.UserProfileDTO;
 import com.eshwar.WordWave.models.Blog;
 import com.eshwar.WordWave.models.User;
 import com.eshwar.WordWave.repos.UserRepo;
+import com.eshwar.WordWave.utils.LoginResponse;
 import com.eshwar.WordWave.utils.MyResponse;
 import com.eshwar.WordWave.utils.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +71,10 @@ public class UserService {
                         false
                 );
             }
-
-            return new MyResponse(
-                    jwt.generateToken(user.getUsername()),
+            User returnUser = repo.findByUsername(user.getUsername());
+            String jwtToken = jwt.generateToken(user.getUsername());
+            return new MyResponse<LoginResponse>(
+                    new LoginResponse(returnUser,jwtToken),
                     "No error",
                     "user login success",
                     true
@@ -88,6 +91,24 @@ public class UserService {
     }
     public UserDTO convertToDTO(User user) {
         return new UserDTO(user);
+    }
+
+    public MyResponse<UserProfileDTO> getUserProfileDTO(String username) {
+        User user = repo.findByUsername(username);
+        if(user==null){
+            return new MyResponse(
+                    "No user found",
+                    "No error",
+                    "no message",
+                    false
+            );
+        }
+        return new MyResponse<UserProfileDTO>(
+                new UserProfileDTO(user),
+                "No error",
+                "user data success",
+                true
+        );
     }
 }
 

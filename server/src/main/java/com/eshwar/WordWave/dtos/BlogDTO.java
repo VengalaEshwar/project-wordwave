@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BlogDTO {
     private Long id;
+    private String image;
     private String title;
     private String content;
     private List<String> tags;
@@ -27,6 +28,7 @@ public class BlogDTO {
         this.title = blog.getTitle();
         this.content = blog.getContent();
         this.tags = blog.getTags();
+        this.image = blog.getBlogImage();
         this.createdAt = blog.getCreatedAt();
         this.author = new UserDTO(blog.getAuthor()); // Construct UserDTO from the Blog's author
         this.comments = blog.getComments().stream()

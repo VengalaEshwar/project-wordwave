@@ -1,22 +1,43 @@
 // src/pages/Login.jsx
 import { useState } from "react";
 import { motion } from "framer-motion";
-
+import axios from "axios";
+import axiosInstance from "../helpers/axiosInstance";
+import{ useDispatch, useSelector} from "react-redux";
+import { setUser } from "../redux/slices/userSlice";
+import { loginSuccess } from "../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-
+const dispatch = useDispatch();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // TODO: Send formData to backend login API
-    console.log(formData);
+    const response = await axiosInstance.post("/login", formData);
+    console.log(response.data);
+    if (response.data.status) {
+      const token = response.data.result.token;
+   dispatch(setUser(response.data.result.user));
+      dispatch(loginSuccess(response.data.result));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user",JSON.stringify(response.data.result.user));
+      console.log("Login successful, token saved!");
+     console.log("Navigating now...");
+navigate("/profile");
+console.log("Navigation function called.");
+
+    } else {
+      console.error("Login failed:", response.data.message);
+    }
   };
 
   return (

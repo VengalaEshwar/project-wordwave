@@ -20,8 +20,7 @@ export default function Navbar() {
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
     { to: "/blogs", label: "Blogs" },
-    ...(isLoggedIn ? [{ to: "/profile", label: "Profile" }] : []),
-    {to:"/profile",label:"Profile"},
+    ...(isLoggedIn ? [{ to: "/profile", label: "Profile" }] : [])
   ];
 
   return (

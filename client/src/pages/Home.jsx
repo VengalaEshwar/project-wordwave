@@ -1,5 +1,7 @@
 // src/pages/Home.jsx
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
 
 const features = [
   {
@@ -25,6 +27,7 @@ const features = [
 ];
 
 const Home = () => {
+  const isLoggin = useSelector((state) => state.auth).isLoggedIn;
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10 md:px-20">
       <motion.div
@@ -64,15 +67,18 @@ const Home = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
       >
+        {
+       !isLoggin && <>
         <p className="text-lg text-gray-700">
           Ready to start your blogging journey?
         </p>
-        <a
-          href="/signup"
+          <NavLink
+          to="/signup"
           className="mt-4 inline-block bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition"
         >
           Get Started
-        </a>
+        </NavLink></>
+        }
       </motion.div>
     </div>
   );

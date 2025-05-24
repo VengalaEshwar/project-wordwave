@@ -9,6 +9,7 @@ import SignUp from './pages/SignUp'
 import Profile from './pages/Profile'
 import Error from './pages/Error'
 import Navbar from './components/Navbar'
+import BlogUploadPage from './pages/BlogUpload'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -19,6 +20,7 @@ function App() {
       <Route path="/" element={<Home/>}/>
       <Route path="/about" element={<About/>}/>
       <Route path="/blogs" element={<Blogs/>}/>
+      <Route path="/blogs/create" element={<BlogUploadPage/>}/>
       <Route path="/login" element={<Login/>}/>
       <Route path="/signup" element={<SignUp/>}/>
       <Route path="/profile" element={<Profile/>}/>

@@ -1,9 +1,12 @@
 package com.eshwar.WordWave.controllers;
 
+import com.eshwar.WordWave.dtos.UserProfileDTO;
+import com.eshwar.WordWave.services.UserService;
+import com.eshwar.WordWave.utils.MyResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class HomeController {
@@ -18,6 +21,13 @@ public class HomeController {
     @GetMapping("/contact")
     public String contact(){
         return "This is contacts page";
+    }
+    @Autowired
+    UserService userService;
+    @GetMapping("/getUser")
+    public Object getUser(Authentication authentication){
+        MyResponse<UserProfileDTO> user = userService.getUserProfileDTO(authentication.getName());
+        return user;
     }
     @GetMapping("/test")
     public Object test(){
@@ -50,4 +60,8 @@ public class HomeController {
             }
         };
     }
+//    @RequestMapping("*")
+//    public Object NoContentToFetch(){
+//        return "Nothing to fetch";
+//    }
 }

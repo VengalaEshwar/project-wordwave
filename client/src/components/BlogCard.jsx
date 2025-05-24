@@ -3,59 +3,69 @@ import { motion } from "framer-motion";
 import { FaHeart, FaComment } from "react-icons/fa";
 import moment from "moment";
 import axios from "axios";
+import axiosInstance from "../helpers/axiosInstance";
 
-const BlogCard = ({ blog }) => {
-  const { id, title, content, images, tags, createdAt, author, comments: initialComments, likes: initialLikes } = blog;
+const BlogCard = ({ blog, currentUser }) => {
+  const {
+    id,
+    title,
+    content,
+    image,
+    tags,
+    createdAt,
+    author,
+    comments: initialComments = [],
+    likes: initialLikes = [],
+  } = blog;
 
-  const [likes, setLikes] = useState(initialLikes.length); // likes is an array, so count them
-  const [comments, setComments] = useState(initialComments || []);
+  const [likes, setLikes] = useState(initialLikes.length);
+  const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState("");
+  const [showComments, setShowComments] = useState(false);
 
-  // Function to handle like button click
+  // Handle Like Button
   const handleLike = async () => {
-    setLikes(prevLikes => prevLikes + 1);
-    // Call API to update the like count in the backend
-    try {
-      await axios.post(`/api/blogs/${id}/like`);
-    } catch (error) {
-      console.error("Error liking the blog:", error);
-    }
+    setLikes((prev) => prev + 1);
+    // try {
+    //   await axios.post(`/api/blogs/${id}/like`);
+    // } catch (error) {
+    //   console.error("Error liking the blog:", error);
+    //   setLikes((prev) => prev - 1); // Rollback on failure
+    // }
   };
 
-  // Function to handle adding a new comment
+  // Handle New Comment
   const handleComment = async () => {
-    if (newComment.trim() === "") return; // Don't add empty comments
+    if (newComment.trim() === "") return;
 
     const newCommentObject = {
       content: newComment,
       blog: { id },
-      author: { username: "CurrentUser" }, // Replace with actual logged-in user details
+      author: { username: currentUser?.username || "Guest" },
       commentedAt: new Date().toISOString(),
     };
 
-    // Update the frontend immediately
-    setComments(prevComments => [...prevComments, newCommentObject]);
-    setNewComment(""); // Clear the input after submitting
-
-    // Call API to add comment in the backend
     try {
-      await axios.post(`/api/blogs/${id}/comment`, newCommentObject);
+      await axiosInstance.post(`/blog/comment`, JSON.stringify( newCommentObject));
     } catch (error) {
       console.error("Error adding comment:", error);
     }
+    setComments((prev) => [...prev, newCommentObject]);
+    setNewComment("");
+
   };
 
   return (
     <motion.div
-      className="bg-white shadow-md rounded-xl p-5 hover:shadow-lg transition w-full "
+      className="bg-white shadow-md rounded-xl p-5 hover:shadow-lg transition w-full"
       whileHover={{ scale: 1.02 }}
     >
-      {/* Blog Image */}
-      {images?.length > 0 && (
+      {/* Image */}
+      {image && (
         <img
-          src={images[0]} // Displaying first image only for card
+          src={image}
           alt="blog"
-          className="w-6/12 h-auto object-cover rounded-md mb-4 m-auto"
+          className="w-1/4 h-auto object-cover rounded-md mb-4 m-auto"
         />
       )}
 
@@ -63,61 +73,74 @@ const BlogCard = ({ blog }) => {
       <h2 className="text-xl font-bold text-indigo-600 mb-2">{title}</h2>
 
       {/* Content Preview */}
-      <p className="text-gray-700 mb-3">{content.substring(0, 120)}...</p>
+      <p className="text-gray-700 mb-3">
+        {content}
+      </p>
 
       {/* Tags */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {tags.map((tag, index) => (
-          <span key={index} className="bg-indigo-100 text-indigo-600 px-2 py-1 text-xs rounded">
+        {tags?.map((tag, idx) => (
+          <span key={idx} className="bg-indigo-100 text-indigo-600 px-2 py-1 text-xs rounded">
             #{tag}
           </span>
         ))}
       </div>
 
-      {/* Info */}
+      {/* Author Info */}
       <div className="flex items-center justify-between text-sm text-gray-500">
         <p>👤 {author?.username}</p>
         <p>{moment(createdAt).fromNow()}</p>
       </div>
 
-      {/* Likes & Comments */}
-      <div className="flex items-center gap-4 mt-4 text-gray-600">
-        <div className="flex items-center gap-1 cursor-pointer" onClick={handleLike}>
+      {/* Likes and Comments */}
+      <div className="flex items-center gap-6 mt-4 text-gray-600">
+        <div
+          className="flex items-center gap-1 cursor-pointer hover:scale-110 transition"
+          onClick={handleLike}
+        >
           <FaHeart className="text-red-500" />
           <span>{likes}</span>
         </div>
-        <div className="flex items-center gap-1 cursor-pointer">
+
+        <div
+          className="flex items-center gap-1 cursor-pointer hover:scale-110 transition"
+          onClick={() => setShowComments((prev) => !prev)}
+        >
           <FaComment className="text-blue-500" />
           <span>{comments.length}</span>
         </div>
       </div>
 
-      {/* Add Comment */}
-      <div className="mt-4">
-        <textarea
-          className="w-50 p-2 border rounded-md"
-          placeholder="Add a comment..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
-        <button
-          className="mt-2 w-40 p-2 bg-indigo-600 text-white rounded-md"
-          onClick={handleComment}
-        >
-          Add Comment
-        </button>
-      </div>
+      {/* Toggleable Comments Section */}
+      {showComments && (
+        <div className="mt-4">
+          {/* Add Comment */}
+          <textarea
+            className="w-full p-2 border rounded-md"
+            placeholder="Add a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <button
+            className="mt-2 w-40 p-2 bg-indigo-600 text-white rounded-md disabled:opacity-50"
+            onClick={handleComment}
+            disabled={newComment.trim() === ""}
+          >
+            Add Comment
+          </button>
 
-      {/* Comments List */}
-      <div className="mt-4">
-        {comments.map((comment, index) => (
-          <div key={index} className="border-b py-2">
-            <p className="font-semibold text-gray-800">{comment.author.username}</p>
-            <p className="text-gray-600">{comment.content}</p>
-            <p className="text-xs text-gray-400">{moment(comment.commentedAt).fromNow()}</p>
+          {/* Comment List */}
+          <div className="mt-4">
+            {comments.map((comment, index) => (
+              <div key={index} className="border p-2 mb-2 rounded-md bg-gray-50">
+                <p className="font-semibold text-indigo-700">{comment?.author?.username}</p>
+                <p>{comment?.content}</p>
+                <p className="text-xs text-gray-400">{moment(comment?.commentedAt).fromNow()}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
     </motion.div>
   );
 };

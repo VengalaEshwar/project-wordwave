@@ -12,18 +12,22 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserProfileDTO {
     private Long id;
     private String username;
     private String email;
     private String profileImage;
+    private List<BlogDTO> blogs = new ArrayList<>();
     // Constructor
-    public UserDTO(User user) {
+    public UserProfileDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.profileImage = user.getProfileImage();
-
+//        System.out.println(user.getBlogs());
+        for(Blog blog  : user.getBlogs()){
+            blogs.add(new BlogDTO(blog));
+        }
     }
 
     // Getters and Setters

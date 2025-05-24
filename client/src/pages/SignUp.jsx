@@ -1,6 +1,7 @@
 // src/pages/Signup.jsx
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import axios from "axios";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -36,11 +37,32 @@ const Signup = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-    // send formData to backend with multipart/form-data
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const data = new FormData();
+  data.append("user", JSON.stringify({
+    username: formData.username,
+    email: formData.email,
+    password: formData.password,
+  }));
+
+  if (formData.profileImage) {
+    data.append("image", formData.profileImage);
+  }
+
+  try {
+    const response = await axios.post("http://localhost:8080/register", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("Eshwar", response.data);
+  } catch (error) {
+    console.error("Error during signup:", error);
+  }
+};
+
 
   return (
     <motion.div
@@ -110,6 +132,7 @@ const Signup = () => {
         <button
           type="submit"
           className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition"
+          onClick={handleSubmit}
         >
           Sign Up
         </button>

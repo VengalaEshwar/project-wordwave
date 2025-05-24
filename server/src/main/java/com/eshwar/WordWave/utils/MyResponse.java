@@ -1,8 +1,10 @@
 package com.eshwar.WordWave.utils;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class MyResponse<T> {
     T result;
     String error;

@@ -1,6 +1,7 @@
 package com.eshwar.WordWave.services;
 
 import com.eshwar.WordWave.dtos.BlogDTO;
+import com.eshwar.WordWave.dtos.CommentDTO;
 import com.eshwar.WordWave.models.Blog;
 import com.eshwar.WordWave.models.Comment;
 import com.eshwar.WordWave.models.User;
@@ -30,6 +31,7 @@ public class BlogService {
             User dbUser = userRepo.findByUsername(user.getUsername());
 
             blog.setAuthor(dbUser);
+
             Blog savedBlog = blogRepo.save(blog);
 
             dbUser.getBlogs().add(savedBlog);
@@ -72,10 +74,10 @@ public class BlogService {
 
     @Autowired
     private CommentRepo commentRepo;
-    public Comment addComment(User user, Blog blogg, Comment comment) {
+    public CommentDTO addComment(Comment comment) {
         // Fetch fresh user from DB to avoid detached entities
-        User fetchedUser = userRepo.findByUsername(user.getUsername());
-        Blog blog = blogRepo.findById(blogg.getId()).orElse(null);
+        User fetchedUser = userRepo.findByUsername(comment.getAuthor().getUsername());
+        Blog blog = blogRepo.findById(comment.getBlog().getId()).orElse(null);
         // Set author and blog in comment
         comment.setAuthor(fetchedUser);
         comment.setBlog(blog);
@@ -96,7 +98,9 @@ public class BlogService {
         blogRepo.save(blog);
 
         // Return the saved comment
-        return savedComment;
+        System.out.println(new CommentDTO(savedComment));
+        System.out.println("Added comment");
+        return new CommentDTO(savedComment);
     }
 
 }

@@ -2,7 +2,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null,
+  user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
+  // user : null
 };
 
 const userSlice = createSlice({
@@ -11,6 +12,7 @@ const userSlice = createSlice({
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload;
+      console.log("This is the proof that im called");
     },
     clearUser: (state) => {
       state.user = null;
